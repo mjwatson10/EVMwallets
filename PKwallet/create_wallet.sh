@@ -57,16 +57,31 @@ def ensure_wallets_directory():
         print(f"Created directory: {os.path.abspath(wallets_dir)}")
     return wallets_dir
 
+def ensure_password_file():
+    """Create .password file if it doesn't exist"""
+    password_file = '.password'
+    if not os.path.exists(password_file):
+        print("\nCreating password file...")
+        with open(password_file, 'w') as f:
+            pass  # Create empty file
+        os.chmod(password_file, 0o600)  # Set restrictive permissions
+        print(f"Created password file: {os.path.abspath(password_file)}")
+    return password_file
+
 def save_password(password: str, wallet_address: str):
     """Save password to .password file"""
+    # Ensure password file exists with correct permissions
+    password_file = ensure_password_file()
+    
+    # Create password entry
     password_entry = f"{wallet_address}:{password}\n"
     
     # Append to password file
-    with open('.password', 'a') as file:
+    with open(password_file, 'a') as file:
         file.write(password_entry)
     
-    # Set restrictive permissions
-    os.chmod('.password', 0o600)
+    # Double-check permissions (in case they were changed)
+    os.chmod(password_file, 0o600)
 
 def main():
     print("\n=== Create New Encrypted Wallet ===\n")
